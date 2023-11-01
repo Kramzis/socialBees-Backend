@@ -44,7 +44,11 @@ public class UserEntity {
     @PrimaryKeyJoinColumn
     private Set<WorkEntity> works;
 
-    public UserEntity(){};
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Set<FundingEntity> funding;
+
+    public UserEntity(){}
     public UserEntity(Integer id, String name, String surname, Date birthday, String username, String password, String email, String role){
         this.id =  id;
         this.name = name;

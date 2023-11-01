@@ -9,7 +9,7 @@ import lombok.Getter;
 public class FundingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name="funding_id")
     private Integer id;
     @Column(name="name")
     private String name;
@@ -18,7 +18,16 @@ public class FundingEntity {
     @Column(name="status")
     private String status;
 
-    public FundingEntity(){};
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @OneToOne(mappedBy = "funding", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private PaymentEntity payment;
+
+    public FundingEntity(){}
 
     public FundingEntity(Integer id, String name, Double amount, String status){
         this.id = id;

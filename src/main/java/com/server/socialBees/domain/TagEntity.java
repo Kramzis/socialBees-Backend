@@ -1,7 +1,6 @@
 package com.server.socialBees.domain;
 
 import jakarta.persistence.*;
-import org.hibernate.jdbc.Work;
 
 @Entity
 @Table(name="tag")

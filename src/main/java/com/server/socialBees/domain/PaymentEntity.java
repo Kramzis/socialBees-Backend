@@ -11,7 +11,7 @@ import java.util.Date;
 public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "payment_id")
     private Integer id;
     @Column(name = "method")
     private String method;
@@ -19,4 +19,16 @@ public class PaymentEntity {
     private String status;
     @Column(name = "date")
     private Date date;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "funding_id")
+    private FundingEntity funding;
+
+    public PaymentEntity(Integer id, String method, String status, Date date){
+        this.id = id;
+        this.method = method;
+        this.status = status;
+        this.date = date;
+    }
 }

@@ -2,8 +2,6 @@ package com.server.socialBees.domain;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name="work")
 public class WorkEntity {
@@ -24,5 +22,11 @@ public class WorkEntity {
     @MapsId
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    public WorkEntity(Integer id, String title, String content){
+        this.id = id;
+        this.title = title;
+        this.content = content;
+    }
 
 }

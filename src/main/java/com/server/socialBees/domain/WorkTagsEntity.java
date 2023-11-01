@@ -2,14 +2,12 @@ package com.server.socialBees.domain;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name="workTags")
 public class WorkTagsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "work_id")

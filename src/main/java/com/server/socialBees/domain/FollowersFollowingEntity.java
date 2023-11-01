@@ -2,13 +2,12 @@ package com.server.socialBees.domain;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
-
 @Entity
 @Table(name="followersFollowing")
 public class FollowersFollowingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Integer id;
 
     @ManyToOne

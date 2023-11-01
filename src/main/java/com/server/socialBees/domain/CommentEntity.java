@@ -19,7 +19,7 @@ public class CommentEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    public CommentEntity(){};
+    public CommentEntity(){}
     public CommentEntity(Integer id, String content){
         this.id = id;
         this.content = content;
