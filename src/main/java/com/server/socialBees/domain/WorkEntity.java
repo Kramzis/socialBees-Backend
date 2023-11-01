@@ -14,9 +14,9 @@ public class WorkEntity {
     @Column(name="content")
     private String content;
 
-    //osobna klasa
-    @Column(name="fileAttachment")
-    private String fileAttachment;
+    @OneToOne(mappedBy = "work", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private FileEntity file;
 
     @ManyToOne
     @MapsId
