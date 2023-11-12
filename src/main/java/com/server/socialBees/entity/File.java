@@ -1,15 +1,17 @@
-package com.server.socialBees.domain;
+package com.server.socialBees.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name ="file")
-public class FileEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="file_id")
+public class File {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name ="name")
     private String name;
@@ -23,12 +25,9 @@ public class FileEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "work_id")
-    private WorkEntity work;
+    private Work work;
 
-    public FileEntity() {
-    }
-
-    public FileEntity(String name, String type, byte[] data) {
+    public File(String name, String type, byte[] data) {
         this.name = name;
         this.type = type;
         this.data = data;

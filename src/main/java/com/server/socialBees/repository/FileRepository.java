@@ -1,9 +1,9 @@
 package com.server.socialBees.repository;
 
-import com.server.socialBees.domain.FileEntity;
+import com.server.socialBees.entity.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FileRepository extends JpaRepository<FileEntity, String> {
+public interface FileRepository extends JpaRepository<File, String> {
 }

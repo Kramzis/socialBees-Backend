@@ -1,24 +1,25 @@
-package com.server.socialBees.domain;
+package com.server.socialBees.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="workTags")
-public class WorkTagsEntity {
+public class WorkTags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "work_id")
-    private WorkEntity work;
+    private Work work;
 
     @ManyToOne
     @JoinColumn(name = "tag_id")
-    private TagEntity tag;
-
-    public WorkTagsEntity(WorkEntity work, TagEntity tag) {
-        this.work = work;
-        this.tag = tag;
-    }
+    private Tag tag;
 }
