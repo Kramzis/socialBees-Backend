@@ -1,12 +1,14 @@
 package com.server.socialBees.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "comment")
@@ -15,9 +17,20 @@ public class Comment {
     private Integer id;
     @Column(nullable = false, unique = true, name="content")
     private String content;
+    @Column(nullable = false, name="date")
+    private LocalDate date;
+    @Column(nullable = false, name="isDeleted")
+    private boolean isDeleted;
 
     @ManyToOne
-    @MapsId
+    //@MapsId
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "work_id")
+    @JsonBackReference
+    private Work work;
+
 }

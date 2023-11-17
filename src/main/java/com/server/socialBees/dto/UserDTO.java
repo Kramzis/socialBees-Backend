@@ -1,10 +1,7 @@
-package com.server.socialBees;
+package com.server.socialBees.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
-@Data
 @Getter
 @Setter
 @AllArgsConstructor

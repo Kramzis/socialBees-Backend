@@ -6,11 +6,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService{
+    private final UserInfoRepository userInfoRepository;
     public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
         this.userInfoRepository = userInfoRepository;
     }
-
-    UserInfoRepository userInfoRepository;
 
     @Override
     public UserInfo createUserInfo(UserInfo userInfo) {

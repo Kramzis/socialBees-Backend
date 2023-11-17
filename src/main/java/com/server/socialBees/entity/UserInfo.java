@@ -1,5 +1,6 @@
 package com.server.socialBees.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,6 @@ public class UserInfo {
     private LocalDate birthday;
 
     @OneToOne
+    @JsonBackReference
     private User user;
 }

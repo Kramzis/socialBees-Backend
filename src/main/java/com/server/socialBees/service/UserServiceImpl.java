@@ -1,8 +1,6 @@
 package com.server.socialBees.service;
 
 import com.server.socialBees.entity.User;
-import com.server.socialBees.entity.UserInfo;
-import com.server.socialBees.repository.UserInfoRepository;
 import com.server.socialBees.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -22,9 +20,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserById(Integer userId)
+    @Transactional
+    public User getUserBy(Integer userId){
+        User user = userRepository.findUserById(userId);
+        if(user.isDeleted()){
+           return null;
+        } else {
+         return user;
+        }
+    }
+
+    @Override
+    @Transactional
+    public User updateUser(User newUser){
+        User user = userRepository.findUserById(newUser.getId());
+        if(user != null){
+            user.setUsername(newUser.getUsername());
+            user.setEmail(newUser.getEmail());
+            user.setPassword(newUser.getPassword());
+            return userRepository.save(user);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public User deleteUserBy(Integer userId)
     {
-        userRepository.deleteById(userId);
+        User user = userRepository.findUserById(userId);
+        user.setDeleted(true);
+
+        return userRepository.save(user);
     }
 }
 
