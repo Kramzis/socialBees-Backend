@@ -15,15 +15,17 @@ import java.time.LocalDate;
 public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(nullable = false, unique = true, name="content")
     private String content;
+
     @Column(nullable = false, name="date")
     private LocalDate date;
+
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 
     @ManyToOne
-    //@MapsId
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;

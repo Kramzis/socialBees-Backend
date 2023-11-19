@@ -1,8 +1,11 @@
 package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.UserDTO;
+import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.entity.UserInfo;
+import com.server.socialBees.entity.Work;
+import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.UserInfoService;
 import com.server.socialBees.service.UserService;
 import jakarta.transaction.Transactional;
@@ -12,12 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private UserInfoService userInfoService;
@@ -85,5 +93,27 @@ public class UserController {
         return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
     }
 
+    @PostMapping("/{userId}/follow-tag/{tagId}")
+    public ResponseEntity<String> followTag(@PathVariable Integer userId, @PathVariable Integer tagId) {
+        userService.followTag(userId, tagId);
+        return new ResponseEntity<>("Tag followed successfully!", HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/tags")
+    public ResponseEntity<Set<Tag>> getFollowedTags(@PathVariable Integer userId){
+        User user = userRepository.findUserById(userId);
+        return new ResponseEntity<>(user.getTags(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{userId}/unfollow-tag/{tagId}")
+    public ResponseEntity<String> unfollowTag(@PathVariable Integer userId, @PathVariable Integer tagId) {
+        userService.unfollowTag(userId, tagId);
+        return new ResponseEntity<>("Tag unfollowed successfully!", HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/works")
+    public ResponseEntity<List<Work>> getWorksForUser(@PathVariable Integer userId) {
+        return new ResponseEntity<>(userService.getWorksForUser(userId), HttpStatus.OK);
+    }
 
 }

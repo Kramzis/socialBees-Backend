@@ -14,10 +14,13 @@ import java.util.Date;
 public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(nullable = false, name = "method")
     private String method;
+
     @Column(nullable = false, name = "status")
     private String status;
+
     @Column(nullable = false, name = "date")
     private Date date;
 

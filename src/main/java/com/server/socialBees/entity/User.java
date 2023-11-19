@@ -38,7 +38,6 @@ public class User {
     private AccountData accountData;
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@PrimaryKeyJoinColumn
     @JsonManagedReference
     private Set<Work> works = new HashSet<>();
 
@@ -46,8 +45,13 @@ public class User {
     @JsonManagedReference
     private Set<Comment> comments;
 
-//    @OneToMany(mappedBy ="user", cascade = CascadeType.ALL)
-//    private Set<Tag> tags;
+    @ManyToMany
+    @JoinTable(
+            name = "user_tags",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
     private Set<Funding> funding;

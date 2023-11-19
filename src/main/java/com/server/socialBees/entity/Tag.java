@@ -1,6 +1,7 @@
 package com.server.socialBees.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +20,10 @@ import java.util.Set;
 public class Tag {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(unique = true, name="name")
     private String name;
-    @Column(nullable = false, name="ifFollowed")
-    private boolean ifFollowed;
+
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 
@@ -31,8 +32,7 @@ public class Tag {
     //@JoinColumn(name="work_id", nullable=false)
     private Set<Work> works = new HashSet<>();
 
-//    @ManyToOne
-//    @MapsId
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToMany(mappedBy = "tags")
+    @JsonBackReference
+    private Set<User> users = new HashSet<>();
 }

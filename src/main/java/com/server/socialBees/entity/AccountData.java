@@ -13,11 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "accountData")
 public class AccountData {
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(unique = true, name="accountNumber")
     private Integer accountNumber;
+
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 

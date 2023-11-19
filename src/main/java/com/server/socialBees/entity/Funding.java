@@ -13,10 +13,13 @@ public class Funding {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(nullable = false, name = "name")
     private String name;
+
     @Column(nullable = false, name = "amount")
     private Double amount;
+
     @Column(nullable = false, name = "status")
     private String status;
 
