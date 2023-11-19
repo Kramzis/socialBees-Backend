@@ -9,5 +9,5 @@ public interface FollowService {
     Follow createFollow(Follow follow);
     List<User> getFollowers(Integer followingId);
     List<User> getFollowing(Integer followerId);
-    void deleteFollowBy(Integer followId);
+    void deleteFollow(Follow follow);
 }

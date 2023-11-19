@@ -3,6 +3,7 @@ package com.server.socialBees.controller;
 import com.server.socialBees.dto.FollowDTO;
 import com.server.socialBees.entity.Follow;
 import com.server.socialBees.entity.User;
+import com.server.socialBees.repository.FollowRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class FollowController {
 
     @Autowired
     private FollowService followService;
+
+    @Autowired
+    private FollowRepository followRepository;
 
     @PostMapping()
     public ResponseEntity<Follow> createFollow(@RequestBody FollowDTO followDTO){
@@ -44,6 +48,14 @@ public class FollowController {
     public ResponseEntity<List<User>> getFollowers(@PathVariable Integer followingId) {
         List<User> followers = followService.getFollowers(followingId);
         return ResponseEntity.ok(followers);
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<String> deleteFollow(@RequestBody FollowDTO followDTO){
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(followDTO.getFollowerId(), followDTO.getFollowingId());
+        followService.deleteFollow(follow);
+
+        return new ResponseEntity<>("Unfollowed successfully!", HttpStatus.OK);
     }
 
 }

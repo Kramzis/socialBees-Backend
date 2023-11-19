@@ -37,8 +37,8 @@ public class FollowServiceImpl implements FollowService{
     }
 
     @Override
-    public void deleteFollowBy(Integer followId) {
-        followRepository.deleteById(followId);
+    public void deleteFollow(Follow follow) {
+        followRepository.delete(follow);
     }
 
 }
