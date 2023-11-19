@@ -5,6 +5,7 @@ import com.server.socialBees.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -52,5 +53,20 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(user);
     }
+
+//    @Transactional
+//    public void follow(Long userId, Long toFollowId) {
+//        User user = userRepository.findById(userId);
+//        User toFollow = userRepository.findById(toFollowId);
+//        user.addFollower(toFollow);
+//    }
+//    @Override
+//    @Transactional
+//    public void unfollow(Integer userId, Integer toUnfollowId) {
+//        User user = userRepository.findById(userId);
+//        User toFollow = userRepository.findById(toUnfollowId);
+//        user.removeFollower(toFollow);
+//    }
+
 }
 

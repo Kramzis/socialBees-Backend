@@ -4,4 +4,5 @@ import com.server.socialBees.entity.AccountData;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountDataRepository extends JpaRepository<AccountData, Integer> {
+    AccountData findAccountDataById(Integer accountDataId);
 }

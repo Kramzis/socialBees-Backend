@@ -18,6 +18,8 @@ public class AccountData {
     private Integer id;
     @Column(unique = true, name="accountNumber")
     private Integer accountNumber;
+    @Column(nullable = false, name="isDeleted")
+    private boolean isDeleted;
 
     @OneToOne
     @MapsId
