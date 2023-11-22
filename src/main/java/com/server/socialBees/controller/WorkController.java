@@ -1,37 +1,48 @@
 package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.WorkDTO;
+import com.server.socialBees.entity.FileDB;
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.entity.Work;
+import com.server.socialBees.repository.FileRepository;
 import com.server.socialBees.repository.UserRepository;
+import com.server.socialBees.service.FileService;
 import com.server.socialBees.service.TagService;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Controller
 @RequestMapping("/work")
 public class WorkController {
-    @Autowired
-    private WorkService workService;
+    private final WorkService workService;
+    private final FileService fileService;
+    private final FileRepository fileRepository;
+    private final TagService tagService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private TagService tagService;
-
-    @Autowired
-    private UserRepository userRepository;
+    public WorkController(WorkService workService, FileService fileService, FileRepository fileRepository,
+                          TagService tagService, UserRepository userRepository) {
+        this.workService = workService;
+        this.fileService = fileService;
+        this.fileRepository = fileRepository;
+        this.tagService = tagService;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
     @PostMapping()
-    public ResponseEntity<String> createWork(@RequestBody WorkDTO workDTO){
+    public ResponseEntity<String> createWork(@ModelAttribute WorkDTO workDTO) throws IOException {
         User user = userRepository.findUserById(workDTO.getUserId());
 
         workDTO.setDate(LocalDate.now());
@@ -43,13 +54,21 @@ public class WorkController {
         work.setDeleted(false);
         work.setUser(user);
 
+        List<FileDB> files = fileService.store(workDTO.getFiles());
+        work.setFilesDB(files);
+
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         work.setTags(tags);
 
-        //work.setUser();
+        Work savedWork = workService.createWork(work);
 
-        Work createdWork = workService.createWork(work);
-//        userRepository.save(user);
+        if(!files.isEmpty()){
+            for (FileDB file : files) {
+                file.setWork(savedWork);
+                fileRepository.save(file);
+            }
+        }
+
         return new ResponseEntity<>("Work added successfully!", HttpStatus.OK);
     }
 
@@ -64,20 +83,31 @@ public class WorkController {
     }
 
     @Transactional
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateWork(@RequestBody WorkDTO workDTO, @PathVariable Integer id){
-        Work updatedWork = new Work();
-        updatedWork.setId(id);
-        updatedWork.setTitle(workDTO.getTitle());
-        updatedWork.setContent(workDTO.getContent());
-        updatedWork.setDate(workDTO.getDate());
+    @PutMapping("/{workId}")
+    public ResponseEntity<String> updateWork(@ModelAttribute WorkDTO workDTO, @PathVariable Integer workId) throws IOException {
+        Work oldWork = new Work();
+        oldWork.setId(workId);
+        oldWork.setTitle(workDTO.getTitle());
+        oldWork.setContent(workDTO.getContent());
+        oldWork.setDate(workDTO.getDate());
 
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
-        updatedWork.setTags(tags);
+        oldWork.setTags(tags);
 
-        //dodaj pliki
+        List<FileDB> newFiles = fileService.updateFiles(workDTO.getFiles(), workId);
+        oldWork.setFilesDB(newFiles);
 
-        workService.updateWork(updatedWork);
+        try{
+            Work updatedWork =  workService.updateWork(oldWork);
+            if(!newFiles.isEmpty()){
+                for (FileDB file : newFiles) {
+                    file.setWork(updatedWork);
+                    fileRepository.save(file);
+                }
+            }
+        }catch(DataIntegrityViolationException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity<>("Work updated successfully!", HttpStatus.OK);
     }

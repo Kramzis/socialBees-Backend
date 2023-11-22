@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,7 +23,7 @@ public class Work {
     @Column(nullable = false, unique = true, length = 20, name="title")
     private String title;
 
-    @Column(nullable = false, unique = true, length = 180, name="content")
+    @Column(nullable = false, length = 180, name="content")
     private String content;
 
     @Column(nullable = false, name="date")
@@ -31,12 +32,11 @@ public class Work {
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 
-    @OneToOne(mappedBy = "work")
-    //@PrimaryKeyJoinColumn
-    private File file;
+    @OneToMany(mappedBy = "work")
+    @JsonManagedReference
+    private List<FileDB> filesDB;
 
     @ManyToOne
-    //@MapsId
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
@@ -49,7 +49,7 @@ public class Work {
     inverseJoinColumns = @JoinColumn(name="tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "work", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     @JsonManagedReference
     private Set<Comment> comments = new HashSet<>();
 }

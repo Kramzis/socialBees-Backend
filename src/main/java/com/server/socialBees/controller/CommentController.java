@@ -4,12 +4,10 @@ import com.server.socialBees.dto.CommentDTO;
 import com.server.socialBees.entity.Comment;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.entity.Work;
-import com.server.socialBees.repository.CommentRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.repository.WorkRepository;
 import com.server.socialBees.service.CommentService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,17 +18,15 @@ import java.time.LocalDate;
 @Controller
 @RequestMapping("/comment")
 public class CommentController {
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+    private final UserRepository userRepository;
+    private final WorkRepository workRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private WorkRepository workRepository;
-
-    @Autowired
-    private CommentRepository commentRepository;
+    public CommentController(CommentService commentService, UserRepository userRepository, WorkRepository workRepository){
+        this.commentService = commentService;
+        this.userRepository = userRepository;
+        this.workRepository = workRepository;
+    }
 
     @Transactional
     @PostMapping()
@@ -48,7 +44,7 @@ public class CommentController {
         comment.setWork(work);
 
 
-        Comment createdComment = commentService.createComment(comment);
+        commentService.createComment(comment);
         return new ResponseEntity<>("Comment added successfully!", HttpStatus.OK);
     }
 

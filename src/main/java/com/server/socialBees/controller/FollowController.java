@@ -6,7 +6,6 @@ import com.server.socialBees.entity.User;
 import com.server.socialBees.repository.FollowRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.FollowService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,14 +16,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/follow")
 public class FollowController {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private FollowService followService;
-
-    @Autowired
-    private FollowRepository followRepository;
+    private final FollowService followService;
+    private final FollowRepository followRepository;
+    private final UserRepository userRepository;
+    public FollowController(FollowService followService, FollowRepository followRepository, UserRepository userRepository){
+        this.followService = followService;
+        this.followRepository = followRepository;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping()
     public ResponseEntity<Follow> createFollow(@RequestBody FollowDTO followDTO){

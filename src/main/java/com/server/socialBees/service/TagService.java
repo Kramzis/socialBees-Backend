@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface TagService {
-    //List<Work> getAllTWorks();
     Set<Tag> assignTagsToSetFromList(List<String> tags);
     Tag deleteTagBy(Integer tagId);
 }

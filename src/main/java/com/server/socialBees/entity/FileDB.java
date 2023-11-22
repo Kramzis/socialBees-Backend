@@ -4,33 +4,31 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
+import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="tag")
-public class Tag {
+@Table(name ="fileDB")
+public class FileDB {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, name="name")
+    @Column(nullable = false, name ="name")
     private String name;
 
-    @Column(nullable = false, name="isDeleted")
-    private boolean isDeleted;
+    @Column(nullable = false, name ="type")
+    private String type;
 
-    @JsonBackReference
-    @ManyToMany(mappedBy = "tags")
-    private Set<Work> works = new HashSet<>();
+    @Lob
+    @Column(nullable = false, name = "data", columnDefinition = "LONGBLOB", length = 2147483647)
+    private byte[] data;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToOne
     @JsonBackReference
-    private Set<User> users = new HashSet<>();
+    private Work work;
+
 }

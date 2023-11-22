@@ -34,9 +34,6 @@ public class User {
     @JsonManagedReference
     private UserInfo userInfo;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private AccountData accountData;
-
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<Work> works = new HashSet<>();

@@ -1,10 +1,12 @@
 package com.server.socialBees.controller;
 
-import com.server.socialBees.entity.File;
+import com.server.socialBees.entity.FileDB;
+import com.server.socialBees.entity.Work;
 import com.server.socialBees.message.ResponseFile;
 import com.server.socialBees.message.ResponseMessage;
-import com.server.socialBees.service.FileStorageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.server.socialBees.repository.FileRepository;
+import com.server.socialBees.service.FileService;
+import com.server.socialBees.service.WorkService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +19,44 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@CrossOrigin("http://localhost:8081")
+@RequestMapping("/file")
 public class FileController {
-    @Autowired
-    private FileStorageService storageService;
+    private final FileService fileService;
+    private final FileRepository fileRepository;
+    private final WorkService workService;
+
+    public FileController(FileService fileService, FileRepository fileRepository, WorkService workService){
+        this.fileService = fileService;
+        this.fileRepository = fileRepository;
+        this.workService = workService;
+    }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
-        String message = "";
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("files") List<MultipartFile> files, @RequestParam("workId") Integer workId) {
+        String message;
         try {
-            storageService.store(file);
+            List<FileDB> uploadedFiles = fileService.store(files);
 
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            Work work = workService.getWorkBy(workId);
+
+            for (FileDB file : uploadedFiles) {
+                file.setWork(work);
+                fileRepository.save(file);
+            }
+
+            fileService.store(files);
+
+            message = "Uploaded the files successfully!";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+            message = "Could not upload the files!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
 
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> getListFiles() {
-        List<ResponseFile> files = storageService.getAllFiles().map(dbFile -> {
+        List<ResponseFile> files = fileService.getAllFiles().map(dbFile -> {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
                     .path("/files/")
@@ -57,7 +75,7 @@ public class FileController {
 
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        File file = storageService.getFile(id);
+        FileDB file = fileService.getFile(id);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")

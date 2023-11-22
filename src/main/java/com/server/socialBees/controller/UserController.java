@@ -5,11 +5,9 @@ import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.entity.UserInfo;
 import com.server.socialBees.entity.Work;
-import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.UserInfoService;
 import com.server.socialBees.service.UserService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -21,42 +19,36 @@ import java.util.Set;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserInfoService userInfoService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserInfoService userInfoService;
+    public UserController(UserService userService, UserInfoService userInfoService){
+        this.userService = userService;
+        this.userInfoService = userInfoService;
+    }
 
     @Transactional
     @PostMapping()
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
 
-        // Utworzenie obiektu User
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setDeleted(false);
 
-        // Ustawienie innych danych użytkownika
-
         LocalDate birthday = LocalDate.parse(userDTO.getBirthday());
 
-        // Utworzenie obiektu UserInfo
         UserInfo userInfo = new UserInfo();
         userInfo.setName(userDTO.getName());
         userInfo.setSurname(userDTO.getSurname());
         userInfo.setBirthday(birthday);
 
-        // Ustawienie relacji jeden do jeden między User a UserInfo
         user.setUserInfo(userInfo);
         userInfo.setUser(user);
 
-        User createdUser = userService.createUser(user);
-        UserInfo createdUserInfo = userInfoService.createUserInfo(userInfo);
+        userService.createUser(user);
+        userInfoService.createUserInfo(userInfo);
 
         return new ResponseEntity<>("User created successfully!",HttpStatus.OK);
     }
@@ -101,8 +93,7 @@ public class UserController {
 
     @GetMapping("/{userId}/tags")
     public ResponseEntity<Set<Tag>> getFollowedTags(@PathVariable Integer userId){
-        User user = userRepository.findUserById(userId);
-        return new ResponseEntity<>(user.getTags(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getFollowedTags(userId), HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}/unfollow-tag/{tagId}")

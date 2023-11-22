@@ -2,24 +2,21 @@ package com.server.socialBees.initializer;
 
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.repository.TagRepository;
-import com.server.socialBees.repository.WorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TagInitializer implements CommandLineRunner {
-    private final WorkRepository workRepository;
     private final TagRepository tagRepository;
 
     @Autowired
-    public TagInitializer(WorkRepository workRepository, TagRepository tagRepository) {
-        this.workRepository = workRepository;
+    public TagInitializer(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         initializeTags();
     }
 

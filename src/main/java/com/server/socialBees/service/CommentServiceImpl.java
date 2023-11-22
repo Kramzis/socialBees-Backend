@@ -20,7 +20,12 @@ public class CommentServiceImpl implements CommentService{
     @Override
     @Transactional
     public Comment getCommentBy(Integer commentId){
-        return commentRepository.findCommentById(commentId);
+        Comment comment = commentRepository.findCommentById(commentId);
+        if(comment.isDeleted()){
+            return null;
+        } else {
+            return comment;
+        }
     }
 
     @Override
