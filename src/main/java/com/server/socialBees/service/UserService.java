@@ -9,11 +9,12 @@ import java.util.Set;
 
 public interface UserService {
     User createUser(User user);
-    User getUserBy(Integer userId);
+    User getUserById(Integer userId);
+    User getUserByEmail(String email);
     User updateUser(User newUser);
     void followTag(Integer userId, Integer tagId);
     void unfollowTag(Integer userId, Integer tagId);
     List<Work> getWorksForUser(Integer userId);
     Set<Tag> getFollowedTags(Integer userId);
-    User deleteUserBy(Integer userId);
+    User deleteUserById(Integer userId);
 }

@@ -7,6 +7,7 @@ import com.server.socialBees.repository.TagRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.repository.WorkRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,27 +18,41 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final WorkRepository workRepository;
-    public UserServiceImpl(UserRepository userRepository, WorkRepository workRepository, TagRepository tagRepository) {
+    private final PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, WorkRepository workRepository, TagRepository tagRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.workRepository = workRepository;
         this.tagRepository = tagRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
     public User createUser(User user)
     {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public User getUserBy(Integer userId){
+    public User getUserById(Integer userId){
         User user = userRepository.findUserById(userId);
         if(user.isDeleted()){
            return null;
         } else {
          return user;
+        }
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        User user = userRepository.getUserByEmail(email);
+
+        if (user != null && !user.isDeleted()){
+            return user;
+        } else {
+            return null;
         }
     }
 
@@ -48,7 +63,7 @@ public class UserServiceImpl implements UserService {
         if(user != null){
             user.setUsername(newUser.getUsername());
             user.setEmail(newUser.getEmail());
-            user.setPassword(newUser.getPassword());
+            user.setPassword(passwordEncoder.encode(newUser.getPassword()));
             return userRepository.save(user);
         } else {
             return null;
@@ -56,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User deleteUserBy(Integer userId)
+    public User deleteUserById(Integer userId)
     {
         User user = userRepository.findUserById(userId);
         user.setDeleted(true);

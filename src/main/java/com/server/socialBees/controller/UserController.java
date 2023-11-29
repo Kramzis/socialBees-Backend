@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @Transactional
-    @PostMapping()
+    @PostMapping("/register")
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
 
         User user = new User();
@@ -55,7 +55,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Integer id) {
-        User user = userService.getUserBy(id);
+        User user = userService.getUserById(id);
         if(user == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -80,7 +80,7 @@ public class UserController {
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer id){
-        userService.deleteUserBy(id);
+        userService.deleteUserById(id);
 
         return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
     }
