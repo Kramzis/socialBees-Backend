@@ -49,7 +49,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
-
-    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
-    private Set<Funding> funding;
 }
