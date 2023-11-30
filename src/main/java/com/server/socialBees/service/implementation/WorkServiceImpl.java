@@ -1,7 +1,8 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.Work;
 import com.server.socialBees.repository.WorkRepository;
+import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Service
-public class WorkServiceImpl implements WorkService{
+public class WorkServiceImpl implements WorkService {
     private final WorkRepository workRepository;
     public WorkServiceImpl(WorkRepository workRepository) {
         this.workRepository = workRepository;
@@ -23,7 +24,7 @@ public class WorkServiceImpl implements WorkService{
 
     @Override
     @Transactional
-    public Work getWorkBy(Integer workId){
+    public Work getWorkById(Long workId){
         Work work = workRepository.findWorkById(workId);
         if(work.isDeleted()){
             return null;
@@ -50,7 +51,7 @@ public class WorkServiceImpl implements WorkService{
 
     @Override
     @Transactional
-    public Work deleteWorkBy(Integer workId){
+    public Work deleteWorkById(Long workId){
         Work work = workRepository.findWorkById(workId);
         work.setDeleted(true);
 

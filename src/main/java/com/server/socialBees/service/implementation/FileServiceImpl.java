@@ -1,7 +1,8 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.FileDB;
 import com.server.socialBees.repository.FileRepository;
+import com.server.socialBees.service.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +36,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileDB> updateFiles(List<MultipartFile> addedFiles, Integer workId) throws IOException {
+    public List<FileDB> updateFiles(List<MultipartFile> addedFiles, Long workId) throws IOException {
         List<FileDB> formerFiles = fileRepository.findAllByWorkId(workId);
 
         fileRepository.deleteAll(formerFiles);

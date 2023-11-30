@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Table(name = "comment")
 public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, unique = true, name="content")
     private String content;

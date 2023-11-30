@@ -7,10 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
-    private Integer id;
+    private Long id;
     private String username;
     private String email;
-    private String password;
     private String name;
     private String surname;
     private String birthday;

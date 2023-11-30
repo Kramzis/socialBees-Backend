@@ -1,5 +1,6 @@
 package com.server.socialBees.dto;
 
+import com.server.socialBees.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkDTO {
-    private Integer userId;
+    private Long userId;
     private String title;
     private String content;
     private LocalDate date;

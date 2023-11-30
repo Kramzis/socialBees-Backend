@@ -17,8 +17,8 @@ public class TagController {
     }
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable Integer id){
-        tagService.deleteTagBy(id);
+    public ResponseEntity<String> deleteTag(@PathVariable Long id){
+        tagService.deleteTagById(id);
 
         return new ResponseEntity<>("Tag deleted successfully!", HttpStatus.OK);
     }

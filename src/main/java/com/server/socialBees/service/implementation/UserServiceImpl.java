@@ -1,4 +1,4 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
@@ -6,6 +6,7 @@ import com.server.socialBees.entity.Work;
 import com.server.socialBees.repository.TagRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.repository.WorkRepository;
+import com.server.socialBees.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User getUserById(Integer userId){
+    public User getUserById(Long userId){
         User user = userRepository.findUserById(userId);
         if(user.isDeleted()){
            return null;
@@ -63,7 +64,6 @@ public class UserServiceImpl implements UserService {
         if(user != null){
             user.setUsername(newUser.getUsername());
             user.setEmail(newUser.getEmail());
-            user.setPassword(passwordEncoder.encode(newUser.getPassword()));
             return userRepository.save(user);
         } else {
             return null;
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User deleteUserById(Integer userId)
+    public User deleteUserById(Long userId)
     {
         User user = userRepository.findUserById(userId);
         user.setDeleted(true);
@@ -81,16 +81,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void followTag(Integer userId, Integer tagId) {
+    public void followTag(Long userId, Long tagId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag not found"));
 
         user.getTags().add(tag);
         userRepository.save(user);
     }
+
+    @Override
+    public Set<Tag> getFollowedTags(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getTags();
+    }
+
     @Override
     @Transactional
-    public void unfollowTag(Integer userId, Integer tagId) {
+    public void unfollowTag(Long userId, Long tagId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag not found"));
 
@@ -99,16 +106,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Work> getWorksForUser(Integer userId) {
+    public List<Work> getWorksForUser(Long userId) {
         User user = userRepository.findUserById(userId);
         Set<Tag> tags = user.getTags();
         return workRepository.findByTagsIn(tags);
-    }
-
-    @Override
-    public Set<Tag> getFollowedTags(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getTags();
     }
 
 }

@@ -11,6 +11,7 @@ import com.server.socialBees.service.FileService;
 import com.server.socialBees.service.TagService;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,8 +74,8 @@ public class WorkController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Work> getWork(@PathVariable Integer id) {
-        Work work = workService.getWorkBy(id);
+    public ResponseEntity<Work> getWork(@PathVariable Long id) {
+        Work work = workService.getWorkById(id);
         if(work == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -84,7 +85,7 @@ public class WorkController {
 
     @Transactional
     @PutMapping("/{workId}")
-    public ResponseEntity<String> updateWork(@ModelAttribute WorkDTO workDTO, @PathVariable Integer workId) throws IOException {
+    public ResponseEntity<String> updateWork(@ModelAttribute WorkDTO workDTO, @PathVariable Long workId) throws IOException {
         Work oldWork = new Work();
         oldWork.setId(workId);
         oldWork.setTitle(workDTO.getTitle());
@@ -114,8 +115,8 @@ public class WorkController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteWork(@PathVariable Integer id){
-        workService.deleteWorkBy(id);
+    public ResponseEntity<String> deleteWork(@PathVariable Long id){
+        workService.deleteWorkById(id);
 
         return new ResponseEntity<>("Work deleted successfully!", HttpStatus.OK);
     }

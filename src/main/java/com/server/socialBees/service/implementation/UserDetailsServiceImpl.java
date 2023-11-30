@@ -1,4 +1,4 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.User;
 import com.server.socialBees.repository.UserRepository;

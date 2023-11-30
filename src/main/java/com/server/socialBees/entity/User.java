@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @Table(name = "user")
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, length = 8, unique = true, name="username")
     private String username;
@@ -27,12 +28,17 @@ public class User {
     @Column(nullable = false, length = 64, name="password")
     private String password;
 
+    @Column(nullable = false, name="name")
+    private String name;
+
+    @Column(nullable = false, name="surname")
+    private String surname;
+
+    @Column(name="birthday")
+    private LocalDate birthday;
+
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private UserInfo userInfo;
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

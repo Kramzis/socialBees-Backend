@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface FollowService {
     Follow createFollow(Follow follow);
-    List<User> getFollowers(Integer followingId);
-    List<User> getFollowing(Integer followerId);
+    List<User> getFollowers(Long followingId);
+    List<User> getFollowing(Long followerId);
     void deleteFollow(Follow follow);
 }

@@ -2,55 +2,37 @@ package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.CommentDTO;
 import com.server.socialBees.entity.Comment;
-import com.server.socialBees.entity.User;
-import com.server.socialBees.entity.Work;
-import com.server.socialBees.repository.UserRepository;
-import com.server.socialBees.repository.WorkRepository;
 import com.server.socialBees.service.CommentService;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
-    private final UserRepository userRepository;
-    private final WorkRepository workRepository;
 
-    public CommentController(CommentService commentService, UserRepository userRepository, WorkRepository workRepository){
+    public CommentController(CommentService commentService){
         this.commentService = commentService;
-        this.userRepository = userRepository;
-        this.workRepository = workRepository;
     }
 
     @Transactional
     @PostMapping()
     public ResponseEntity<String> createComment(@RequestBody CommentDTO commentDTO){
-        User user = userRepository.findUserById(commentDTO.getUserId());
-        Work work = workRepository.findWorkById(commentDTO.getWorkId());
-
-        commentDTO.setDate(LocalDate.now());
-
-        Comment comment = new Comment();
-        comment.setContent(commentDTO.getContent());
-        comment.setDate(commentDTO.getDate());
-        comment.setDeleted(false);
-        comment.setUser(user);
-        comment.setWork(work);
-
+        ModelMapper modelMapper = new ModelMapper();
+        Comment comment = modelMapper.map(commentDTO, Comment.class);
 
         commentService.createComment(comment);
         return new ResponseEntity<>("Comment added successfully!", HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getComment(@PathVariable Integer id) {
-        Comment comment = commentService.getCommentBy(id);
+    public ResponseEntity<Comment> getComment(@PathVariable Long id) {
+        Comment comment = commentService.getCommentById(id);
         if(comment == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -60,11 +42,11 @@ public class CommentController {
 
     @Transactional
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO, @PathVariable Integer id){
-        Comment updatedComment = new Comment();
+    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO, @PathVariable Long id){
+        ModelMapper modelMapper = new ModelMapper();
+        Comment updatedComment = modelMapper.map(commentDTO, Comment.class);
+
         updatedComment.setId(id);
-        updatedComment.setContent(commentDTO.getContent());
-        updatedComment.setDate(commentDTO.getDate());
 
         commentService.updateComment(updatedComment);
 
@@ -73,8 +55,8 @@ public class CommentController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Integer id){
-        commentService.deleteCommentBy(id);
+    public ResponseEntity<String> deleteComment(@PathVariable Long id){
+        commentService.deleteCommentById(id);
 
         return new ResponseEntity<>("Comment deleted successfully!", HttpStatus.OK);
     }

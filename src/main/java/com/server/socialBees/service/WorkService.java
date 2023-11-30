@@ -4,7 +4,7 @@ import com.server.socialBees.entity.Work;
 
 public interface WorkService {
     Work createWork(Work work);
-    Work getWorkBy(Integer workId);
+    Work getWorkById(Long workId);
     Work updateWork(Work newWork);
-    Work deleteWorkBy(Integer workId);
+    Work deleteWorkById(Long workId);
 }

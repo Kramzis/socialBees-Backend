@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentDTO {
-    private Integer userId;
-    private Integer workId;
-    private Integer commentId;
+    private Long id;
+    private Long userId;
+    private Long workId;
     private String content;
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 }

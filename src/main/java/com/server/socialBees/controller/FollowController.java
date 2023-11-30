@@ -1,17 +1,21 @@
 package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.FollowDTO;
+import com.server.socialBees.dto.UserFollowInfoDTO;
 import com.server.socialBees.entity.Follow;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.repository.FollowRepository;
 import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.FollowService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/follow")
@@ -26,27 +30,48 @@ public class FollowController {
     }
 
     @PostMapping()
-    public ResponseEntity<Follow> createFollow(@RequestBody FollowDTO followDTO){
-        User follower = userRepository.findUserById(followDTO.getFollowerId());
-        User following = userRepository.findUserById(followDTO.getFollowingId());
+    public ResponseEntity<String> createFollow(@RequestBody FollowDTO followDTO){
+        ModelMapper modelMapper = new ModelMapper();
 
-        Follow follow = new Follow();
-        follow.setFollower(follower);
-        follow.setFollowing(following);
+        TypeMap<FollowDTO, Follow> typeMap = modelMapper.createTypeMap(FollowDTO.class, Follow.class);
 
-        return new ResponseEntity<>(followService.createFollow(follow), HttpStatus.OK);
+        typeMap.addMappings(mapper -> mapper.using(ctx -> userRepository.findUserById(followDTO.getFollowerId()))
+                .map(FollowDTO::getFollowerId, Follow::setFollower));
+
+        typeMap.addMappings(mapper -> mapper.using(ctx -> userRepository.findUserById(followDTO.getFollowingId()))
+                .map(FollowDTO::getFollowingId, Follow::setFollowing));
+
+        Follow follow = modelMapper.map(followDTO, Follow.class);
+
+        followService.createFollow(follow);
+
+        return new ResponseEntity<>("You have followed successfully!", HttpStatus.OK);
     }
 
     @GetMapping("/following/{followerId}")
-    public ResponseEntity<List<User>> getFollowing(@PathVariable Integer followerId) {
+    public ResponseEntity<List<UserFollowInfoDTO>> getFollowing(@PathVariable Long followerId) {
         List<User> usersIFollow = followService.getFollowing(followerId);
-        return ResponseEntity.ok(usersIFollow);
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        List<UserFollowInfoDTO> userFollowInfos = usersIFollow.stream()
+                .map(user -> modelMapper.map(user, UserFollowInfoDTO.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userFollowInfos);
     }
 
     @GetMapping("/followers/{followingId}")
-    public ResponseEntity<List<User>> getFollowers(@PathVariable Integer followingId) {
+    public ResponseEntity<List<UserFollowInfoDTO>> getFollowers(@PathVariable Long followingId) {
         List<User> followers = followService.getFollowers(followingId);
-        return ResponseEntity.ok(followers);
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        List<UserFollowInfoDTO> userFollowInfos = followers.stream()
+                .map(user -> modelMapper.map(user, UserFollowInfoDTO.class))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userFollowInfos);
     }
 
     @DeleteMapping()

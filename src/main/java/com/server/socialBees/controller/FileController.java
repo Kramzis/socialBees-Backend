@@ -32,12 +32,12 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("files") List<MultipartFile> files, @RequestParam("workId") Integer workId) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("files") List<MultipartFile> files, @RequestParam("workId") Long workId) {
         String message;
         try {
             List<FileDB> uploadedFiles = fileService.store(files);
 
-            Work work = workService.getWorkBy(workId);
+            Work work = workService.getWorkById(workId);
 
             for (FileDB file : uploadedFiles) {
                 file.setWork(work);

@@ -1,7 +1,8 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.repository.TagRepository;
+import com.server.socialBees.service.TagService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public Tag deleteTagBy(Integer tagId){
+    public Tag deleteTagById(Long tagId){
         Tag tag = tagRepository.findTagById(tagId);
         tag.setDeleted(true);
 

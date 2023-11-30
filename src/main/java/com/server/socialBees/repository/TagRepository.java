@@ -8,8 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Set;
 
-public interface TagRepository extends JpaRepository<Tag, Integer> {
-    Tag findTagById(Integer tagId);
+public interface TagRepository extends JpaRepository<Tag, Long> {
+    Tag findTagById(Long tagId);
     @Query("SELECT t FROM Tag t WHERE t.name IN :tags")
     Set<Tag> assignTagsToSetFromList(@Param("tags") List<String> tags);
 }

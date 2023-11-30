@@ -1,13 +1,14 @@
-package com.server.socialBees.service;
+package com.server.socialBees.service.implementation;
 
 import com.server.socialBees.entity.Comment;
 import com.server.socialBees.repository.CommentRepository;
+import com.server.socialBees.service.CommentService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 
 @Service
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     public CommentServiceImpl(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;
@@ -19,7 +20,7 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     @Transactional
-    public Comment getCommentBy(Integer commentId){
+    public Comment getCommentById(Long commentId){
         Comment comment = commentRepository.findCommentById(commentId);
         if(comment.isDeleted()){
             return null;
@@ -42,7 +43,7 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     @Transactional
-    public Comment deleteCommentBy(Integer commentId){
+    public Comment deleteCommentById(Long commentId){
         Comment comment = commentRepository.findCommentById(commentId);
         comment.setDeleted(true);
 

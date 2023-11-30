@@ -15,7 +15,7 @@ import lombok.Setter;
 @Table(name ="fileDB")
 public class FileDB {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(nullable = false, name ="name")
     private String name;

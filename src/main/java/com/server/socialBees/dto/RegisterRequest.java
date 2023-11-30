@@ -9,8 +9,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FollowDTO {
+public class RegisterRequest {
     private Long id;
-    private Long followerId;
-    private Long followingId;
+    private String username;
+    private String email;
+    private String password;
+    private String name;
+    private String surname;
+    private String birthday;
 }

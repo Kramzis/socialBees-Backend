@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileDB, String> {
-    List<FileDB> findAllByWorkId(Integer workId);
+    List<FileDB> findAllByWorkId(Long workId);
 }
