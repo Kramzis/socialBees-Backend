@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Controller
@@ -56,29 +57,33 @@ public class FileController {
 
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> getListFiles() {
-        List<ResponseFile> files = fileService.getAllFiles().map(dbFile -> {
-            String fileDownloadUri = ServletUriComponentsBuilder
-                    .fromCurrentContextPath()
-                    .path("/files/")
-                    .path(String.valueOf(dbFile.getId()))
-                    .toUriString();
+            List<ResponseFile> files = fileService.getAllFiles().map(dbFile -> {
+                String fileDownloadUri = ServletUriComponentsBuilder
+                        .fromCurrentContextPath()
+                        .path("/files/")
+                        .path(String.valueOf(dbFile.getId()))
+                        .toUriString();
 
-            return new ResponseFile(
-                    dbFile.getName(),
-                    fileDownloadUri,
-                    dbFile.getType(),
-                    dbFile.getData().length);
-        }).collect(Collectors.toList());
+                return new ResponseFile(
+                        dbFile.getName(),
+                        fileDownloadUri,
+                        dbFile.getType(),
+                        dbFile.getData().length);
+            }).collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(files);
+            return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        FileDB file = fileService.getFile(id);
+        try{
+            FileDB file = fileService.getFile(id);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                .body(file.getData());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                    .body(file.getData());
+        } catch(NoSuchElementException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

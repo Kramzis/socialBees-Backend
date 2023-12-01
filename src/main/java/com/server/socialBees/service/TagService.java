@@ -7,5 +7,4 @@ import java.util.Set;
 
 public interface TagService {
     Set<Tag> assignTagsToSetFromList(List<String> tags);
-    Tag deleteTagById(Long tagId);
 }

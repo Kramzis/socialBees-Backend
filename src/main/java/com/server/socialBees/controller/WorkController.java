@@ -12,6 +12,7 @@ import com.server.socialBees.service.TagService;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -44,26 +44,23 @@ public class WorkController {
     @Transactional
     @PostMapping()
     public ResponseEntity<String> createWork(@ModelAttribute WorkDTO workDTO) throws IOException {
-        User user = userRepository.findUserById(workDTO.getUserId());
+        ModelMapper modelMapper = new ModelMapper();
+        Work work = modelMapper.map(workDTO, Work.class);
 
-        workDTO.setDate(LocalDate.now());
-
-        Work work = new Work();
-        work.setTitle(workDTO.getTitle());
-        work.setContent(workDTO.getContent());
-        work.setDate(workDTO.getDate());
-        work.setDeleted(false);
+        User user = userRepository.findById(workDTO.getUserId()).get();
         work.setUser(user);
-
-        List<FileDB> files = fileService.store(workDTO.getFiles());
-        work.setFilesDB(files);
 
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         work.setTags(tags);
 
+
+        List<FileDB> files = fileService.store(workDTO.getFiles());
+        work.setFilesDB(files);
+
         Work savedWork = workService.createWork(work);
 
-        if(!files.isEmpty()){
+
+        if (!files.isEmpty()) {
             for (FileDB file : files) {
                 file.setWork(savedWork);
                 fileRepository.save(file);
@@ -83,14 +80,17 @@ public class WorkController {
         }
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<Work>> getRecentWork(){
+        List<Work> recentWorks = workService.getRecentWorks();
+        return new ResponseEntity<>(recentWorks, HttpStatus.OK);
+    }
+
     @Transactional
     @PutMapping("/{workId}")
     public ResponseEntity<String> updateWork(@ModelAttribute WorkDTO workDTO, @PathVariable Long workId) throws IOException {
-        Work oldWork = new Work();
-        oldWork.setId(workId);
-        oldWork.setTitle(workDTO.getTitle());
-        oldWork.setContent(workDTO.getContent());
-        oldWork.setDate(workDTO.getDate());
+        ModelMapper modelMapper = new ModelMapper();
+        Work oldWork = modelMapper.map(workDTO, Work.class);
 
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         oldWork.setTags(tags);

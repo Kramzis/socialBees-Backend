@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
@@ -29,20 +30,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(User user)
-    {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
     public User getUserById(Long userId){
-        User user = userRepository.findUserById(userId);
-        if(user.isDeleted()){
-           return null;
+        User user = userRepository.findById(userId).get();
+
+        if(!user.isDeleted()){
+            return user;
         } else {
-         return user;
+            throw new NoSuchElementException("User not found!");
         }
     }
 
@@ -50,30 +44,42 @@ public class UserServiceImpl implements UserService {
     public User getUserByEmail(String email) {
         User user = userRepository.getUserByEmail(email);
 
-        if (user != null && !user.isDeleted()){
-            return user;
+        if(user == null){
+            throw new NoSuchElementException("User not found!");
         } else {
-            return null;
+            if(user.isDeleted()){
+                throw new NoSuchElementException("User not found!");
+            } else {
+                return user;
+            }
         }
     }
 
     @Override
     @Transactional
+    public User createUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public User updateUser(User newUser){
-        User user = userRepository.findUserById(newUser.getId());
-        if(user != null){
+        User user = userRepository.findById(newUser.getId()).get();
+
+        if(!user.isDeleted()){
             user.setUsername(newUser.getUsername());
             user.setEmail(newUser.getEmail());
             return userRepository.save(user);
         } else {
-            return null;
+            throw new NoSuchElementException("User not found!");
         }
     }
 
     @Override
     public User deleteUserById(Long userId)
     {
-        User user = userRepository.findUserById(userId);
+        User user = userRepository.findById(userId).get();
         user.setDeleted(true);
 
         return userRepository.save(user);
@@ -82,7 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void followTag(Long userId, Long tagId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).get();
         Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag not found"));
 
         user.getTags().add(tag);
@@ -91,14 +97,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Set<Tag> getFollowedTags(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).get();
         return user.getTags();
     }
 
     @Override
     @Transactional
     public void unfollowTag(Long userId, Long tagId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).get();
         Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new RuntimeException("Tag not found"));
 
         user.getTags().remove(tag);
@@ -107,7 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Work> getWorksForUser(Long userId) {
-        User user = userRepository.findUserById(userId);
+        User user = userRepository.findById(userId).get();
         Set<Tag> tags = user.getTags();
         return workRepository.findByTagsIn(tags);
     }

@@ -1,7 +1,6 @@
 package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.RegisterRequest;
-import com.server.socialBees.dto.TagDTO;
 import com.server.socialBees.dto.UserDTO;
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
@@ -11,16 +10,15 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Controller
@@ -37,15 +35,13 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> createUser(@RequestBody RegisterRequest registerRequest) {
         ModelMapper modelMapper = new ModelMapper();
-        Converter<String, LocalDate> birthdayConverter = context -> {
-            String source = context.getSource();
+        Converter<String, LocalDate> birthdayConverter = context -> {String source = context.getSource();
             if (source == null) {
                 return null;
             }
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(source, formatter);
-        };
+            };
 
         TypeMap<RegisterRequest, User> typeMap = modelMapper.createTypeMap(RegisterRequest.class, User.class);
         typeMap.addMappings(mapper -> mapper.using(birthdayConverter).map(RegisterRequest::getBirthday, User::setBirthday));
@@ -59,30 +55,36 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
-        ModelMapper modelMapper = new ModelMapper();
+        try{
+            ModelMapper modelMapper = new ModelMapper();
+            User user = userService.getUserById(id);
 
-        User user = userService.getUserById(id);
-
-        if(user == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } catch(NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id){
-        ModelMapper modelMapper = new ModelMapper();
+        try {
+            ModelMapper modelMapper = new ModelMapper();
 
-        User updatedUser = modelMapper.map(userDTO, User.class);
+            User updatedUser = modelMapper.map(userDTO, User.class);
 
-        updatedUser.setId(id);
+            updatedUser.setId(id);
 
-        userService.updateUser(updatedUser);
+            userService.updateUser(updatedUser);
 
-        return new ResponseEntity<>("User updated successfully!", HttpStatus.OK);
+            return new ResponseEntity<>("User updated successfully!", HttpStatus.OK);
+        } catch (IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (NoSuchElementException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @Transactional
@@ -100,14 +102,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/tags")
-    public ResponseEntity<Set<TagDTO>> getFollowedTags(@PathVariable Long userId){
-        ModelMapper modelMapper = new ModelMapper();
-
+    public ResponseEntity<Set<Tag>> getFollowedTags(@PathVariable Long userId){
         Set<Tag> tags = userService.getFollowedTags(userId);
-        Type setType = new TypeToken<Set<TagDTO>>() {}.getType();
-        Set<TagDTO> tagsDTO = modelMapper.map(tags, setType);
 
-        return new ResponseEntity<>(tagsDTO, HttpStatus.OK);
+        return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 
     @DeleteMapping("/{userId}/unfollow-tag/{tagId}")
@@ -120,5 +118,4 @@ public class UserController {
     public ResponseEntity<List<Work>> getWorksForUser(@PathVariable Long userId) {
         return new ResponseEntity<>(userService.getWorksForUser(userId), HttpStatus.OK);
     }
-
 }

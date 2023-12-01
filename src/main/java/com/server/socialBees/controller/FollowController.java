@@ -9,6 +9,7 @@ import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.service.FollowService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,17 +32,12 @@ public class FollowController {
 
     @PostMapping()
     public ResponseEntity<String> createFollow(@RequestBody FollowDTO followDTO){
-        ModelMapper modelMapper = new ModelMapper();
+        Follow follow = new Follow();
+        User follower = userRepository.findById(followDTO.getFollowerId()).get();
+        User following = userRepository.findById(followDTO.getFollowingId()).get();
 
-        TypeMap<FollowDTO, Follow> typeMap = modelMapper.createTypeMap(FollowDTO.class, Follow.class);
-
-        typeMap.addMappings(mapper -> mapper.using(ctx -> userRepository.findUserById(followDTO.getFollowerId()))
-                .map(FollowDTO::getFollowerId, Follow::setFollower));
-
-        typeMap.addMappings(mapper -> mapper.using(ctx -> userRepository.findUserById(followDTO.getFollowingId()))
-                .map(FollowDTO::getFollowingId, Follow::setFollowing));
-
-        Follow follow = modelMapper.map(followDTO, Follow.class);
+        follow.setFollower(follower);
+        follow.setFollowing(following);
 
         followService.createFollow(follow);
 

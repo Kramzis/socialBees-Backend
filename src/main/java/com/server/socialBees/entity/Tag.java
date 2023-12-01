@@ -23,11 +23,8 @@ public class Tag {
     @Column(unique = true, name="name")
     private String name;
 
-    @Column(nullable = false, name="isDeleted")
-    private boolean isDeleted;
-
-    @JsonBackReference
     @ManyToMany(mappedBy = "tags")
+    @JsonBackReference
     private Set<Work> works = new HashSet<>();
 
     @ManyToMany(mappedBy = "tags")

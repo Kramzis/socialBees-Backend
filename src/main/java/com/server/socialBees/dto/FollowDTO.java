@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FollowDTO {
-    private Long id;
     private Long followerId;
     private Long followingId;
 }

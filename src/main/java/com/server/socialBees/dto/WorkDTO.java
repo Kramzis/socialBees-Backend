@@ -1,6 +1,5 @@
 package com.server.socialBees.dto;
 
-import com.server.socialBees.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ public class WorkDTO {
     private Long userId;
     private String title;
     private String content;
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
     private List<String> tags;
     private List<MultipartFile> files;
 }

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class WorkServiceImpl implements WorkService {
@@ -31,6 +34,12 @@ public class WorkServiceImpl implements WorkService {
         } else {
             return work;
         }
+    }
+
+    public List<Work> getRecentWorks() {
+        LocalDate last30Days = LocalDate.now().minusDays(30);
+
+        return workRepository.findRecentWorks(last30Days);
     }
 
     @Override

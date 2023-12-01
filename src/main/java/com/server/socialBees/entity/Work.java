@@ -42,11 +42,11 @@ public class Work {
     private User user;
 
     @ManyToMany
-    @JsonManagedReference
     @JoinTable(
             name="work_tag",
           joinColumns = @JoinColumn(name="work_id"),
     inverseJoinColumns = @JoinColumn(name="tag_id"))
+    @JsonManagedReference
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "work", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
