@@ -21,6 +21,11 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
+    public boolean isUserFollowing(Long followerId, Long followingId) {
+        return followRepository.isUserFollowing(followerId, followingId);
+    }
+
+    @Override
     public Follow createFollow(Follow follow) {
         return followRepository.save(follow);
     }
@@ -38,8 +43,16 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void deleteFollow(Follow follow) {
-        followRepository.delete(follow);
+    public Long getNumberOfFollowersForUser(Long userId) {
+        return (long) getFollowers(userId).size();
     }
+
+    @Override
+    public Long getNumberOfFollowingForUser(Long userId) {
+            return (long) getFollowing(userId).size();
+    }
+
+    @Override
+    public void deleteFollow(Follow follow) {followRepository.delete(follow);}
 
 }

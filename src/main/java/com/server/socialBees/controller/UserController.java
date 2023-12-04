@@ -2,17 +2,19 @@ package com.server.socialBees.controller;
 
 import com.server.socialBees.dto.RegisterRequest;
 import com.server.socialBees.dto.UserDTO;
+import com.server.socialBees.dto.UserStatsDTO;
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
 import com.server.socialBees.entity.Work;
+import com.server.socialBees.service.FollowService;
 import com.server.socialBees.service.UserService;
+import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,13 +23,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-@Controller
+@RestController
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final FollowService followService;
+    private final WorkService workService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService, FollowService followService, WorkService workService){
         this.userService = userService;
+        this.followService = followService;
+        this.workService = workService;
 
     }
 
@@ -87,6 +94,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}/stats")
+    public ResponseEntity<UserStatsDTO> getUserStats(@PathVariable Long userId){
+        UserStatsDTO userStatsDTO = new UserStatsDTO(
+                workService.getNumberOfWorksForUser(userId),
+                followService.getNumberOfFollowersForUser(userId),
+                followService.getNumberOfFollowingForUser(userId));
+        return new ResponseEntity<>(userStatsDTO, HttpStatus.OK);
+    }
+
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id){
@@ -112,10 +128,5 @@ public class UserController {
     public ResponseEntity<String> unfollowTag(@PathVariable Long userId, @PathVariable Long tagId) {
         userService.unfollowTag(userId, tagId);
         return new ResponseEntity<>("Tag unfollowed successfully!", HttpStatus.OK);
-    }
-
-    @GetMapping("/{userId}/works")
-    public ResponseEntity<List<Work>> getWorksForUser(@PathVariable Long userId) {
-        return new ResponseEntity<>(userService.getWorksForUser(userId), HttpStatus.OK);
     }
 }

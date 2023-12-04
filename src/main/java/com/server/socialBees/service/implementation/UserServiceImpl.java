@@ -111,12 +111,5 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public List<Work> getWorksForUser(Long userId) {
-        User user = userRepository.findById(userId).get();
-        Set<Tag> tags = user.getTags();
-        return workRepository.findByTagsIn(tags);
-    }
-
 }
 

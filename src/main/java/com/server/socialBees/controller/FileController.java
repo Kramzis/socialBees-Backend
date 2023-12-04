@@ -20,7 +20,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/file")
+@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping("/files")
 public class FileController {
     private final FileService fileService;
     private final FileRepository fileRepository;
@@ -74,16 +75,12 @@ public class FileController {
             return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-    @GetMapping("/files/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        try{
-            FileDB file = fileService.getFile(id);
+        FileDB fileDB = fileService.getFile(id);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                    .body(file.getData());
-        } catch(NoSuchElementException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+                .body(fileDB.getData());
     }
 }

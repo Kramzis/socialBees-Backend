@@ -14,7 +14,6 @@ public interface UserService {
     User updateUser(User newUser);
     void followTag(Long userId, Long tagId);
     void unfollowTag(Long userId, Long tagId);
-    List<Work> getWorksForUser(Long userId);
     Set<Tag> getFollowedTags(Long userId);
     User deleteUserById(Long userId);
 }

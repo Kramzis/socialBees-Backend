@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/follow")
 public class FollowController {
     private final FollowService followService;
@@ -28,6 +29,11 @@ public class FollowController {
         this.followService = followService;
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping("/{followerId}/{followingId}")
+    public ResponseEntity<Boolean> isUserFollowing(@PathVariable Long followerId, @PathVariable Long followingId){
+       return new ResponseEntity<>(followService.isUserFollowing(followerId, followingId), HttpStatus.OK);
     }
 
     @PostMapping()
@@ -70,9 +76,9 @@ public class FollowController {
         return ResponseEntity.ok(userFollowInfos);
     }
 
-    @DeleteMapping()
-    public ResponseEntity<String> deleteFollow(@RequestBody FollowDTO followDTO){
-        Follow follow = followRepository.findByFollowerIdAndFollowingId(followDTO.getFollowerId(), followDTO.getFollowingId());
+    @DeleteMapping("/unfollow/{userId}/{followingId}")
+    public ResponseEntity<String> deleteFollow(@PathVariable Long userId, @PathVariable Long followingId){
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(userId, followingId);
         followService.deleteFollow(follow);
 
         return new ResponseEntity<>("Unfollowed successfully!", HttpStatus.OK);

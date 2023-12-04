@@ -6,5 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface TagService {
+    List<Tag> getAllTags();
     Set<Tag> assignTagsToSetFromList(List<String> tags);
 }

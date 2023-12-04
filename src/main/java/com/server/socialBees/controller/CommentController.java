@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @Controller
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
@@ -30,9 +31,9 @@ public class CommentController {
         return new ResponseEntity<>("Comment added successfully!", HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Comment> getComment(@PathVariable Long id) {
-        Comment comment = commentService.getCommentById(id);
+    @GetMapping("/{commentId}")
+    public ResponseEntity<Comment> getComment(@PathVariable Long commentId) {
+        Comment comment = commentService.getCommentById(commentId);
         if(comment == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -41,12 +42,12 @@ public class CommentController {
     }
 
     @Transactional
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO, @PathVariable Long id){
+    @PutMapping("/{commentId}")
+    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO, @PathVariable Long commentId){
         ModelMapper modelMapper = new ModelMapper();
         Comment updatedComment = modelMapper.map(commentDTO, Comment.class);
 
-        updatedComment.setId(id);
+        updatedComment.setId(commentId);
 
         commentService.updateComment(updatedComment);
 
@@ -54,9 +55,9 @@ public class CommentController {
     }
 
     @Transactional
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long id){
-        commentService.deleteCommentById(id);
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId){
+        commentService.deleteCommentById(commentId);
 
         return new ResponseEntity<>("Comment deleted successfully!", HttpStatus.OK);
     }
