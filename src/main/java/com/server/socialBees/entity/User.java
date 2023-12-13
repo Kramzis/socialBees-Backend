@@ -46,7 +46,7 @@ public class User {
     private Set<Work> works = new HashSet<>();
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonBackReference
     private Set<Comment> comments;
 
     @ManyToMany

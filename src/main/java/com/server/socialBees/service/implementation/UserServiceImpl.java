@@ -68,7 +68,10 @@ public class UserServiceImpl implements UserService {
 
         if(!user.isDeleted()){
             user.setUsername(newUser.getUsername());
+            user.setName(newUser.getName());
+            user.setSurname(newUser.getSurname());
             user.setEmail(newUser.getEmail());
+            user.setBirthday(newUser.getBirthday());
             return userRepository.save(user);
         } else {
             throw new NoSuchElementException("User not found!");

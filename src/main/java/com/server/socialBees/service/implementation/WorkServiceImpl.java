@@ -85,7 +85,7 @@ public class WorkServiceImpl implements WorkService {
     @Override
     public Long getNumberOfWorksForUser(Long userId){
         User user = userRepository.findById(userId).get();
-        return (long) user.getWorks().size();
+        return (long) user.getWorks().stream().filter(work -> !work.isDeleted()).toList().size();
     }
 
     @Override

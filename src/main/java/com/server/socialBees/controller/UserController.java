@@ -28,7 +28,7 @@ import java.util.Set;
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController{
     private final UserService userService;
     private final FollowService followService;
     private final WorkService workService;
@@ -38,14 +38,6 @@ public class UserController {
         this.followService = followService;
         this.workService = workService;
 
-    }
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<String>> handleIllegalArgumentException(MethodArgumentNotValidException ex){
-        List<String> errors = new ArrayList<>();
-
-        ex.getBindingResult().getFieldErrors().forEach(
-                fieldError -> errors.add(fieldError.getDefaultMessage()));
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     @Transactional
@@ -86,7 +78,7 @@ public class UserController {
 
     @Transactional
     @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long userId){
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserDTO userDTO, @PathVariable Long userId){
         try {
             ModelMapper modelMapper = new ModelMapper();
 

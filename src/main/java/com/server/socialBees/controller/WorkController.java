@@ -12,6 +12,7 @@ import com.server.socialBees.service.TagService;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
 
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ import java.util.Set;
 @Controller
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/work")
-public class WorkController {
+public class WorkController extends BaseController{
     private final WorkService workService;
     private final FileService fileService;
     private final FileRepository fileRepository;
@@ -44,7 +45,7 @@ public class WorkController {
 
     @Transactional
     @PostMapping()
-    public ResponseEntity<String> createWork(@ModelAttribute WorkDTO workDTO) throws IOException {
+    public ResponseEntity<String> createWork(@Valid @ModelAttribute WorkDTO workDTO) throws IOException {
         ModelMapper modelMapper = new ModelMapper();
         Work work = modelMapper.map(workDTO, Work.class);
 
@@ -56,37 +57,44 @@ public class WorkController {
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         work.setTags(tags);
 
-        FileDB file;
-
-        file = fileService.store(workDTO.getFile());
-        work.setFileDB(file);
+        FileDB file = new FileDB();
+        if(workDTO.getFile() != null){
+            file = fileService.store(workDTO.getFile());
+            work.setFileDB(file);
+        }
 
         Work savedWork = workService.createWork(work);
 
-        file.setWork(savedWork);
-        fileRepository.save(file);
+        if(workDTO.getFile() != null){
+            file.setWork(savedWork);
+            fileRepository.save(file);
+        }
 
         return new ResponseEntity<>("Work added successfully!", HttpStatus.OK);
     }
 
     @Transactional
     @PutMapping("/{workId}")
-    public ResponseEntity<String> updateWork(@ModelAttribute WorkDTO workDTO, @PathVariable Long workId) throws IOException {
+    public ResponseEntity<String> updateWork(@Valid @ModelAttribute WorkDTO workDTO, @PathVariable Long workId) throws IOException {
         ModelMapper modelMapper = new ModelMapper();
         Work oldWork = modelMapper.map(workDTO, Work.class);
+        oldWork.setId(workId);
 
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         oldWork.setTags(tags);
 
-        FileDB newFile;
-
-        newFile = fileService.store(workDTO.getFile());
-        oldWork.setFileDB(newFile);
+        FileDB newFile = new FileDB();
+        if(workDTO.getFile() != null){
+            newFile = fileService.store(workDTO.getFile());
+            oldWork.setFileDB(newFile);
+        }
 
         try{
             Work updatedWork =  workService.updateWork(oldWork);
-            newFile.setWork(updatedWork);
-            fileRepository.save(newFile);
+            if(workDTO.getFile() != null){
+                newFile.setWork(updatedWork);
+                fileRepository.save(newFile);
+            }
         }catch(DataIntegrityViolationException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

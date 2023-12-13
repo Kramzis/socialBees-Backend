@@ -19,10 +19,10 @@ public class Work {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 20, name="title")
+    @Column(nullable = false, unique = true, length = 64, name="title")
     private String title;
 
-    @Column(nullable = false, length = 180, name="content")
+    @Column(nullable = false, length = 280, name="content")
     private String content;
 
     @Column(nullable = false, name="date")
@@ -31,7 +31,7 @@ public class Work {
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 
-    @OneToOne(mappedBy = "work")
+    @OneToOne(mappedBy = "work", optional = true)
     @JsonManagedReference
     private FileDB fileDB;
 

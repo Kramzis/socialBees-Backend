@@ -33,13 +33,13 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public List<User> getFollowing(Long followerId) {
         List<Follow> follows = followRepository.findByFollower(userRepository.findById(followerId).get());
-        return follows.stream().map(Follow::getFollowing).collect(Collectors.toList());
+        return follows.stream().map(Follow::getFollowing).filter(user -> !user.isDeleted()).collect(Collectors.toList());
     }
 
     @Override
     public List<User> getFollowers(Long followingId) {
         List<Follow> followers = followRepository.findByFollowing(userRepository.findById(followingId).get());
-        return followers.stream().map(Follow::getFollower).collect(Collectors.toList());
+        return followers.stream().map(Follow::getFollower).filter(user -> !user.isDeleted()).collect(Collectors.toList());
     }
 
     @Override

@@ -57,6 +57,7 @@ public class FollowController {
         ModelMapper modelMapper = new ModelMapper();
 
         List<UserFollowInfoDTO> userFollowInfos = usersIFollow.stream()
+                .filter(user -> !user.isDeleted())
                 .map(user -> modelMapper.map(user, UserFollowInfoDTO.class))
                 .collect(Collectors.toList());
 
@@ -70,6 +71,7 @@ public class FollowController {
         ModelMapper modelMapper = new ModelMapper();
 
         List<UserFollowInfoDTO> userFollowInfos = followers.stream()
+                .filter(user -> !user.isDeleted())
                 .map(user -> modelMapper.map(user, UserFollowInfoDTO.class))
                 .collect(Collectors.toList());
 

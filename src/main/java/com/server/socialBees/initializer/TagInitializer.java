@@ -21,7 +21,7 @@ public class TagInitializer implements CommandLineRunner {
     }
 
     private void initializeTags() {
-        if(!tagRepository.findById(1L).isPresent()) {
+        if(!tagRepository.findTagByName("Poems").isPresent()) {
             Tag tagPoems = new Tag();
             tagPoems.setName("Poems");
             tagRepository.save(tagPoems);

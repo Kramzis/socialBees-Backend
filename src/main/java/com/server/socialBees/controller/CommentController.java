@@ -4,6 +4,7 @@ import com.server.socialBees.dto.CommentDTO;
 import com.server.socialBees.entity.Comment;
 import com.server.socialBees.service.CommentService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/comment")
-public class CommentController {
+public class CommentController extends BaseController{
     private final CommentService commentService;
 
     public CommentController(CommentService commentService){
@@ -23,7 +24,7 @@ public class CommentController {
 
     @Transactional
     @PostMapping()
-    public ResponseEntity<String> createComment(@RequestBody CommentDTO commentDTO){
+    public ResponseEntity<String> createComment(@Valid @RequestBody CommentDTO commentDTO){
         ModelMapper modelMapper = new ModelMapper();
         Comment comment = modelMapper.map(commentDTO, Comment.class);
 
@@ -43,7 +44,7 @@ public class CommentController {
 
     @Transactional
     @PutMapping("/{commentId}")
-    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO, @PathVariable Long commentId){
+    public ResponseEntity<String> updateComment(@Valid @RequestBody CommentDTO commentDTO, @PathVariable Long commentId){
         ModelMapper modelMapper = new ModelMapper();
         Comment updatedComment = modelMapper.map(commentDTO, Comment.class);
 
