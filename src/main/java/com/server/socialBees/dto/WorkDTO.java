@@ -19,5 +19,5 @@ public class WorkDTO {
     private String content;
     private LocalDate date = LocalDate.now();
     private List<String> tags;
-    private List<MultipartFile> files;
+    private MultipartFile file;
 }

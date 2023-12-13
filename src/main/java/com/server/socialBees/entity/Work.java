@@ -1,18 +1,17 @@
 package com.server.socialBees.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="work")
@@ -32,13 +31,13 @@ public class Work {
     @Column(nullable = false, name="isDeleted")
     private boolean isDeleted;
 
-    @OneToMany(mappedBy = "work")
+    @OneToOne(mappedBy = "work")
     @JsonManagedReference
-    private List<FileDB> filesDB;
+    private FileDB fileDB;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonManagedReference
     private User user;
 
     @ManyToMany

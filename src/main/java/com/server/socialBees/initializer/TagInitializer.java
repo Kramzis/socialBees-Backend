@@ -50,13 +50,13 @@ public class TagInitializer implements CommandLineRunner {
             tagNewbies.setName("Newbies");
             tagRepository.save(tagNewbies);
 
-            Tag tagPopular = new Tag();
-            tagPopular.setName("Popular");
-            tagRepository.save(tagPopular);
+            Tag tagSomethingNew = new Tag();
+            tagSomethingNew.setName("Something new");
+            tagRepository.save(tagSomethingNew);
 
-            Tag tagSponsored = new Tag();
-            tagSponsored.setName("Sponsored");
-            tagRepository.save(tagSponsored);
+            Tag tagVideos = new Tag();
+            tagVideos.setName("Videos");
+            tagRepository.save(tagVideos);
 
             Tag tagPioneer = new Tag();
             tagPioneer.setName("Pioneer");

@@ -7,6 +7,7 @@ import com.server.socialBees.repository.UserRepository;
 import com.server.socialBees.repository.WorkRepository;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ import static java.util.Arrays.stream;
 public class WorkServiceImpl implements WorkService {
     private final WorkRepository workRepository;
     private final UserRepository userRepository;
+
+    @Autowired
     public WorkServiceImpl(WorkRepository workRepository, UserRepository userRepository) {
         this.workRepository = workRepository;
         this.userRepository = userRepository;
@@ -38,7 +41,7 @@ public class WorkServiceImpl implements WorkService {
             work.setTitle(newWork.getTitle());
             work.setContent(newWork.getContent());
             work.setDate(LocalDate.now());
-            work.setFilesDB(new ArrayList<>());
+            work.setFileDB(null);
 
             return workRepository.save(work);
         } else {
@@ -59,10 +62,10 @@ public class WorkServiceImpl implements WorkService {
     @Transactional
     public Work getWorkById(Long workId){
         Work work = workRepository.findWorkById(workId);
-        if(work.isDeleted()){
-            return null;
-        } else {
+        if(!work.isDeleted()){
             return work;
+        } else {
+            return null;
         }
     }
 
@@ -96,6 +99,6 @@ public class WorkServiceImpl implements WorkService {
     public List<Work> getRecentWorks() {
         LocalDate last30Days = LocalDate.now().minusDays(30);
 
-        return workRepository.findRecentWorks(last30Days);
+        return workRepository.findRecentWorks(last30Days).stream().filter(work -> !work.isDeleted()).toList();
     }
 }

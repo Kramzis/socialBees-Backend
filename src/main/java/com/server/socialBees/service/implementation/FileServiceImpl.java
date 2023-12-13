@@ -8,9 +8,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -21,27 +18,20 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileDB> store(List<MultipartFile> files) throws IOException {
-        List<FileDB> fileDBList = new ArrayList<>();
-
-        if(!Objects.equals(files.get(0).getOriginalFilename(), "")){
-            for (MultipartFile file : files) {
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-                FileDB fileDB = new FileDB(null, fileName, file.getContentType(), file.getBytes(), null);
-                fileDBList.add(fileRepository.save(fileDB));
-            }
-        }
-
-        return fileDBList;
+    public FileDB store(MultipartFile file) throws IOException {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        FileDB fileDB = new FileDB(null, fileName, file.getContentType(), file.getBytes(), null);
+        fileRepository.save(fileDB);
+        return fileDB;
     }
 
     @Override
-    public List<FileDB> updateFiles(List<MultipartFile> addedFiles, Long workId) throws IOException {
-        List<FileDB> formerFiles = fileRepository.findAllByWorkId(workId);
+    public FileDB updateFile(MultipartFile addedFile, Long workId) throws IOException {
+        FileDB formerFile = fileRepository.findFileByWorkId(workId);
 
-        fileRepository.deleteAll(formerFiles);
+        fileRepository.delete(formerFile);
 
-        return this.store(addedFiles);
+        return this.store(addedFile);
     }
 
     @Override

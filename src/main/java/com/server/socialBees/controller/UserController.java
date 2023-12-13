@@ -5,20 +5,22 @@ import com.server.socialBees.dto.UserDTO;
 import com.server.socialBees.dto.UserStatsDTO;
 import com.server.socialBees.entity.Tag;
 import com.server.socialBees.entity.User;
-import com.server.socialBees.entity.Work;
 import com.server.socialBees.service.FollowService;
 import com.server.socialBees.service.UserService;
 import com.server.socialBees.service.WorkService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -37,16 +39,24 @@ public class UserController {
         this.workService = workService;
 
     }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<String>> handleIllegalArgumentException(MethodArgumentNotValidException ex){
+        List<String> errors = new ArrayList<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(
+                fieldError -> errors.add(fieldError.getDefaultMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 
     @Transactional
     @PostMapping("/register")
-    public ResponseEntity<String> createUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody RegisterRequest registerRequest) {
         ModelMapper modelMapper = new ModelMapper();
         Converter<String, LocalDate> birthdayConverter = context -> {String source = context.getSource();
             if (source == null) {
                 return null;
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             return LocalDate.parse(source, formatter);
             };
 
@@ -60,11 +70,11 @@ public class UserController {
         return new ResponseEntity<>("User created successfully!",HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long userId) {
         try{
             ModelMapper modelMapper = new ModelMapper();
-            User user = userService.getUserById(id);
+            User user = userService.getUserById(userId);
 
             UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
@@ -75,14 +85,14 @@ public class UserController {
     }
 
     @Transactional
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id){
+    @PutMapping("/{userId}")
+    public ResponseEntity<String> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long userId){
         try {
             ModelMapper modelMapper = new ModelMapper();
 
             User updatedUser = modelMapper.map(userDTO, User.class);
 
-            updatedUser.setId(id);
+            updatedUser.setId(userId);
 
             userService.updateUser(updatedUser);
 
@@ -104,9 +114,9 @@ public class UserController {
     }
 
     @Transactional
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id){
-        userService.deleteUserById(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId){
+        userService.deleteUserById(userId);
 
         return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
     }

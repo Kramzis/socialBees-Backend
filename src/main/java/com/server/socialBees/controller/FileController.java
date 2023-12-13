@@ -16,12 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Controller
 @CrossOrigin(origins = "http://localhost:8080")
-@RequestMapping("/files")
+@RequestMapping("/file")
 public class FileController {
     private final FileService fileService;
     private final FileRepository fileRepository;
@@ -34,19 +33,17 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("files") List<MultipartFile> files, @RequestParam("workId") Long workId) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("workId") Long workId) {
         String message;
         try {
-            List<FileDB> uploadedFiles = fileService.store(files);
+            FileDB uploadedFile = fileService.store(file);
 
             Work work = workService.getWorkById(workId);
 
-            for (FileDB file : uploadedFiles) {
-                file.setWork(work);
-                fileRepository.save(file);
-            }
+            uploadedFile.setWork(work);
+            fileRepository.save(uploadedFile);
 
-            fileService.store(files);
+            fileService.store(file);
 
             message = "Uploaded the files successfully!";
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));

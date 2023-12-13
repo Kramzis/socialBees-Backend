@@ -1,5 +1,6 @@
 package com.server.socialBees.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,13 +20,13 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 8, unique = true, name="username")
+    @Column(nullable = false, length = 16, unique = true, name="username")
     private String username;
 
     @Column(nullable = false, length = 50, unique = true, name="email")
     private String email;
 
-    @Column(nullable = false, length = 64, name="password")
+    @Column(nullable = false, length = 20, name="password")
     private String password;
 
     @Column(nullable = false, name="name")
@@ -41,7 +42,7 @@ public class User {
     private boolean isDeleted;
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonBackReference
     private Set<Work> works = new HashSet<>();
 
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL)

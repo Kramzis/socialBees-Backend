@@ -20,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -57,22 +56,15 @@ public class WorkController {
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         work.setTags(tags);
 
-        List<FileDB> files = new ArrayList<>();
+        FileDB file;
 
-        if(workDTO.getFiles() != null){
-            files = fileService.store(workDTO.getFiles());
-            work.setFilesDB(files);
-        }
+        file = fileService.store(workDTO.getFile());
+        work.setFileDB(file);
 
         Work savedWork = workService.createWork(work);
 
-
-        if (!files.isEmpty()) {
-            for (FileDB file : files) {
-                file.setWork(savedWork);
-                fileRepository.save(file);
-            }
-        }
+        file.setWork(savedWork);
+        fileRepository.save(file);
 
         return new ResponseEntity<>("Work added successfully!", HttpStatus.OK);
     }
@@ -86,21 +78,15 @@ public class WorkController {
         Set<Tag> tags = tagService.assignTagsToSetFromList(workDTO.getTags());
         oldWork.setTags(tags);
 
-        List<FileDB> newFiles = new ArrayList<>();
+        FileDB newFile;
 
-        if(workDTO.getFiles() != null){
-            newFiles = fileService.store(workDTO.getFiles());
-            oldWork.setFilesDB(newFiles);
-        }
+        newFile = fileService.store(workDTO.getFile());
+        oldWork.setFileDB(newFile);
 
         try{
             Work updatedWork =  workService.updateWork(oldWork);
-            if(!newFiles.isEmpty()){
-                for (FileDB file : newFiles) {
-                    file.setWork(updatedWork);
-                    fileRepository.save(file);
-                }
-            }
+            newFile.setWork(updatedWork);
+            fileRepository.save(newFile);
         }catch(DataIntegrityViolationException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -27,7 +27,7 @@ public class FileDB {
     @Column(nullable = false, name = "data", columnDefinition = "LONGBLOB", length = 2147483647)
     private byte[] data;
 
-    @ManyToOne
+    @OneToOne
     @JsonBackReference
     private Work work;
 

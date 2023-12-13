@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -19,11 +20,9 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
-    private final WorkRepository workRepository;
     private final PasswordEncoder passwordEncoder;
-    public UserServiceImpl(UserRepository userRepository, WorkRepository workRepository, TagRepository tagRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, TagRepository tagRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.workRepository = workRepository;
         this.tagRepository = tagRepository;
         this.passwordEncoder = passwordEncoder;
     }
